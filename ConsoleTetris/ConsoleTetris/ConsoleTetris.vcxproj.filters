@@ -13,7 +13,7 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="소스 파일\NewFilter1">
+    <Filter Include="소스 파일\PlayGrounds">
       <UniqueIdentifier>{71cd5545-68bc-4163-bbea-f1c8b74bd299}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -36,10 +36,7 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="_PlayGround.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="_PlayGround2.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\PlayGrounds</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
