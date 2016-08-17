@@ -78,6 +78,7 @@ void main()
 	fclose(fp);
 	free(read.cpBlockType);
 }
+
 //
 //void main(){
 //	int i = 0;

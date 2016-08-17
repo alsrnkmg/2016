@@ -41,5 +41,8 @@
     <ClCompile Include="_TestingFileIO.c">
       <Filter>소스 파일\PlayGrounds</Filter>
     </ClCompile>
+    <ClCompile Include="StageCreator_0817.c">
+      <Filter>소스 파일\PlayGrounds</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
