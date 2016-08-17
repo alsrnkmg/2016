@@ -55,29 +55,35 @@ struct BlockUnit{
 
 class BlockQuad{
 private:	// protected? // 상속자라도 접근할 필요가 없는 변수일 것이다.
-	int m_iNumBlock;
 protected:
-	BlockUnit m_aBlockPosition[MAX_BLOCK_SIZE];
+	//BlockUnit m_aBlockPosition[MAX_BLOCK_SIZE];
+	BlockUnit* m_aBlockPosition;
+	const int m_iNumBlock;
 	int m_iBlockRotation;
-	const int m_ciBlockLimiter;
+	const int m_ciBRotationLimiter;
+
 
 	BlockQuad(int in_limiter) :
 		m_iNumBlock(MAX_BLOCK_SIZE),
 		m_iBlockRotation(0),
-		m_ciBlockLimiter(in_limiter){
+		m_ciBRotationLimiter(in_limiter){
+		m_aBlockPosition = new BlockUnit[m_iNumBlock];
 	}
 public:
 	BlockQuad() :
 		m_iNumBlock(MAX_BLOCK_SIZE),
 		m_iBlockRotation(0),
-		m_ciBlockLimiter(0){
+		m_ciBRotationLimiter(0){
+		m_aBlockPosition = new BlockUnit[4];
 		for (int i = 0; i < m_iNumBlock; ++i){
 			m_aBlockPosition[i].x = 0;
 			m_aBlockPosition[i].y = 0;
 			m_aBlockPosition[i].color = EMPTY;
 		}
 	}
-	virtual ~BlockQuad(){}
+	virtual ~BlockQuad(){
+		delete(m_aBlockPosition);
+	}
 
 	virtual void SetRotation(){}
 	virtual void Show(){}
@@ -88,15 +94,12 @@ public:
 		m_aBlockPosition[in_index].y = in_y;
 	}
 	void SetQuad_Color(EBUnitColor in_color){
-		for (int i = 0; i < MAX_BLOCK_SIZE; i++)
+		for (int i = 0; i < m_iNumBlock; i++)
 			m_aBlockPosition[i].color = in_color;
 	}
-	const BlockQuad* GetQuad(){
-		return this;
-	}
-	const BlockUnit* GetUnit(int in_index){
-		return &(this->m_aBlockPosition[in_index]);
-	}
+	const BlockUnit* GetUnit(int in_index){ return &(this->m_aBlockPosition[in_index]); }
+	const BlockQuad* GetQuad(){ return this; }
+	const int GetNumBlock(){ return m_iNumBlock; }
 };
 
 class BlockType_A : public BlockQuad{
@@ -113,7 +116,7 @@ public:
 		m_aBlockPosition[3].x = 0; m_aBlockPosition[3].y = 3; m_aBlockPosition[3].color = DEFAULT;
 	}
 	virtual void SetRotation(){
-		m_iBlockRotation = (m_iBlockRotation + 1) % m_ciBlockLimiter;
+		m_iBlockRotation = (m_iBlockRotation + 1) % m_ciBRotationLimiter;
 
 		if (m_iBlockRotation == 0){
 			m_aBlockPosition[0].x = 0; m_aBlockPosition[0].y = 0;	// ★3
@@ -132,10 +135,10 @@ public:
 	}//SetRotation
 	virtual void Show(){
 		printf("\t< ShowThis >\r\n");
-		printf("\tCONSTANT ciBlockLimiter = %i\r\n", m_ciBlockLimiter);
+		printf("\tCONSTANT ciBRotationLimiter = %i\r\n", m_ciBRotationLimiter);
 		printf("\tcurrent iBlockRotation  = %i\r\n", m_iBlockRotation);
 		printf("\tcurrent this block members' local coordinates are ..\r\n");
-		for (int i = 0; i < MAX_BLOCK_SIZE; i++)
+		for (int i = 0; i < m_iNumBlock; i++)
 			printf("\tINDEX: %i\tX : %i\tY : %i\r\n", i, m_aBlockPosition[i].x, m_aBlockPosition[i].y);
 	}//SHow .. for test.
 };//BlockType_A
@@ -154,7 +157,7 @@ public:
 		m_aBlockPosition[3].x = 0; m_aBlockPosition[3].y = 2; m_aBlockPosition[3].color = DEFAULT;	// ☆0★1
 	}
 	virtual void SetRotation(){
-		m_iBlockRotation = (m_iBlockRotation + 1) % m_ciBlockLimiter;
+		m_iBlockRotation = (m_iBlockRotation + 1) % m_ciBRotationLimiter;
 
 		if (m_iBlockRotation == 0){
 			m_aBlockPosition[0].x = 0; m_aBlockPosition[0].y = 0;	//
@@ -181,44 +184,117 @@ public:
 			m_aBlockPosition[3].x = 2; m_aBlockPosition[3].y = 1;	// ☆0
 		}
 		else{
-			printf("%i", m_iBlockRotation);
-			printf("잡았다 이놈");
 			exit(1);
 		}
 	}
 	virtual void Show(){
 		printf("\t< ShowThis >\r\n");
-		printf("\tCONSTANT ciBlockLimiter = %i\r\n", m_ciBlockLimiter);
+		printf("\tCONSTANT ciBRotationLimiter = %i\r\n", m_ciBRotationLimiter);
 		printf("\tcurrent iBlockRotation  = %i\r\n", m_iBlockRotation);
 		printf("\tcurrent this block members' local coordinates are ..\r\n");
-		for (int i = 0; i < MAX_BLOCK_SIZE; i++)
+		for (int i = 0; i < m_iNumBlock; i++)
 			printf("\tINDEX: %i\tX : %i\tY : %i\r\n", i, m_aBlockPosition[i].x, m_aBlockPosition[i].y);
 	}//Show .. for test.
 };//BlockType_B
 
-// C .. G
+class BlockType_C : public BlockQuad{
+public:
+	BlockType_C() : BlockQuad(4){
+		Init_temp();
+	}
+	virtual ~BlockType_C(){}
+
+	void Init_temp(){
+		m_aBlockPosition[0].x = 0; m_aBlockPosition[0].y = 0;	m_aBlockPosition[3].color = DEFAULT;//
+		m_aBlockPosition[1].x = 1; m_aBlockPosition[1].y = 0;	m_aBlockPosition[3].color = DEFAULT;// 　 ★3
+		m_aBlockPosition[2].x = 1; m_aBlockPosition[2].y = 1;	m_aBlockPosition[3].color = DEFAULT;// 　 ★2
+		m_aBlockPosition[3].x = 1; m_aBlockPosition[3].y = 2;	m_aBlockPosition[3].color = DEFAULT;// ☆0★1
+	}
+	virtual void SetRotation(){
+		m_iBlockRotation = (m_iBlockRotation + 1) % m_ciBRotationLimiter;
+
+		if (m_iBlockRotation == 0){
+			m_aBlockPosition[0].x = 0; m_aBlockPosition[0].y = 0;	//
+			m_aBlockPosition[1].x = 1; m_aBlockPosition[1].y = 0;	// 　 ★3
+			m_aBlockPosition[2].x = 1; m_aBlockPosition[2].y = 1;	// 　 ★2
+			m_aBlockPosition[3].x = 1; m_aBlockPosition[3].y = 2;	// ☆0★1
+		}
+		else if (m_iBlockRotation == 1){
+			m_aBlockPosition[0].x = 0; m_aBlockPosition[0].y = 0;
+			m_aBlockPosition[1].x = 1; m_aBlockPosition[1].y = 0;
+			m_aBlockPosition[2].x = 2; m_aBlockPosition[2].y = 0;	// ★3
+			m_aBlockPosition[3].x = 0; m_aBlockPosition[3].y = 1;	// ☆0★1★2
+		}
+		else if (m_iBlockRotation == 2){
+			m_aBlockPosition[0].x = 0; m_aBlockPosition[0].y = 0;
+			m_aBlockPosition[1].x = 0; m_aBlockPosition[1].y = 1;	// ★2★3
+			m_aBlockPosition[2].x = 0; m_aBlockPosition[2].y = 2;	// ★1
+			m_aBlockPosition[3].x = 1; m_aBlockPosition[3].y = 2;	// ☆0
+		}
+		else if (m_iBlockRotation == 3){
+			m_aBlockPosition[0].x = 2; m_aBlockPosition[0].y = 0;
+			m_aBlockPosition[1].x = 0; m_aBlockPosition[1].y = 1;
+			m_aBlockPosition[2].x = 1; m_aBlockPosition[2].y = 1;	// ★1★2★3
+			m_aBlockPosition[3].x = 2; m_aBlockPosition[3].y = 1;	// 　 　 ☆0
+		}
+		else{
+			exit(1);
+		}
+	}
+	virtual void Show(){
+		printf("\t< ShowThis(Block Type C) >\r\n");
+		printf("\tCONSTANT ciBRotationLimiter = %i\r\n", m_ciBRotationLimiter);
+		printf("\tcurrent iBlockRotation  = %i\r\n", m_iBlockRotation);
+		printf("\tcurrent this block members' local coordinates are ..\r\n");
+		for (int i = 0; i < m_iNumBlock; i++)
+			printf("\tINDEX: %i\tX : %i\tY : %i\r\n", i, m_aBlockPosition[i].x, m_aBlockPosition[i].y);
+	}//Show .. for test.
+};//BlockType_C
+// D .. G
 
 class TetrisBoard{
 private:
-	EBUnitColor aBoard[BOARD_SIZE_ROW][BOARD_SIZE_COL];
+	//EBUnitColor aBoard[BOARD_SIZE_ROW][BOARD_SIZE_COL];
+	EBUnitColor** aBoard;
+	const int m_xSize;
+	const int m_ySize;
 protected:
 public:
-	TetrisBoard(){
-		::memset(this, 0, sizeof(TetrisBoard));
+	TetrisBoard() :
+		m_xSize(20), m_ySize(20){
+		InitBoard();
+		ClearBoard();
 	}
-	~TetrisBoard(){}
+	TetrisBoard(int in_x, int in_y) :
+		m_xSize(in_x), m_ySize(in_y){
+		InitBoard();
+		ClearBoard();
+	}
+	~TetrisBoard(){
+		for (int ColSize = 0; ColSize < m_xSize; ++ColSize)
+			free(aBoard[ColSize]);
+		free(aBoard);
+	}
 
+	void InitBoard(){
+		aBoard = (EBUnitColor**)::malloc(sizeof(EBUnitColor*) * m_ySize);
+		for (int ColSize = 0; ColSize < m_xSize; ++ColSize)
+			aBoard[ColSize] = (EBUnitColor*)::malloc(sizeof(EBUnitColor) * m_xSize);
+	}
 	void SetBoard(int in_x, int in_y, EBUnitColor in_color){
 		aBoard[in_y][in_x] = in_color;
 	}
 
-	void ClearBoard(){ ::memset(this, 0, sizeof(TetrisBoard)); }
+	void ClearBoard(){ //::memset(this, 0, sizeof(TetrisBoard)); }
+		for (int row = 0; row < m_ySize; ++row)
+			::memset((EBUnitColor*)aBoard[row], 0, sizeof(EBUnitColor) * m_xSize);
+	}
 
 	void Show(){
 		printf("     < ShowThis >\r\n");
 		printf("     current status of 'aBoard' is ..\r\n");
-		for (int y = 0; y < BOARD_SIZE_ROW; ++y){
-			for (int x = 0; x < BOARD_SIZE_COL; ++x){
+		for (int y = 0; y < m_ySize; ++y){
+			for (int x = 0; x < m_xSize; ++x){
 				if (aBoard[y][x] == EMPTY)
 					printf(" .");
 				else
@@ -230,12 +306,35 @@ public:
 	}//Show .. for test.
 };
 
+class TInputInterface{
+private:
+protected:
+public:
+};
+
+#include <stdlib.h>
+template<typename T>
+class TBlockGenerator{
+private:
+	FILE* f;
+	T* m_BlockType;
+	const int m_iLength;
+protected:
+public:
+	TBlockGenerator(){
+		f = fopen("")
+	}
+	~TBlockGenerator(){}
+};
+
 class TetrisGame{
 private:
 	BlockQuad* pcCurrentBlock;
-	TetrisBoard cWorld[2];
 	int iCurrentBlockPos_x;
 	int iCurrentBlockPos_y;
+	TetrisBoard cWorld[2];
+	//const int m_World_ySize;
+	//const int m_World_xSize;
 protected:
 public:
 	TetrisGame(){
@@ -247,8 +346,8 @@ public:
 	const int GetCurrentBlockPos_x(){ return iCurrentBlockPos_x; }
 	const int GetCurrentBlockPos_y(){ return iCurrentBlockPos_y; }
 
-	void Init(){
-		CreateBlock('b');
+	void Init(char in_type){
+		CreateBlock(in_type);
 		iCurrentBlockPos_x = 9;
 		iCurrentBlockPos_y = 9;
 	}
@@ -257,6 +356,8 @@ public:
 			pcCurrentBlock = new BlockType_A();
 		else if (in_type == 'b')
 			pcCurrentBlock = new BlockType_B();
+		else if (in_type == 'c')
+			pcCurrentBlock = new BlockType_C();
 	}
 	
 	void DeleteBlock(){ delete pcCurrentBlock; }
@@ -267,12 +368,23 @@ public:
 	}
 	void Local_to_Global(int xBoard_, int yBoard_){
 	//void TransLocalBlockToGlobalWorld(int xBoard_, int yBoard_){
-		const BlockUnit* pcaLocalUnit[MAX_BLOCK_SIZE] = { nullptr, nullptr, nullptr, nullptr };
-
-		cWorld[BOARD_BACK].ClearBoard();
-
+		//const BlockUnit* pcaLocalUnit[MAX_BLOCK_SIZE] = { nullptr, nullptr, nullptr, nullptr };
 		if (pcCurrentBlock){
-			for (int iBlock = 0; iBlock < MAX_BLOCK_SIZE; ++iBlock){
+			const int ciNumBlock = pcCurrentBlock->GetNumBlock();
+			//const BlockUnit* pcaLocalUnit[MAX_BLOCK_SIZE];
+			//for (int UnitIndex = 0; UnitIndex < MAX_BLOCK_SIZE; ++UnitIndex)
+			//for (int UnitIndex = 0; UnitIndex < ciNumBlock; ++UnitIndex)
+			//	pcaLocalUnit[UnitIndex] = nullptr;
+			
+			const BlockUnit** pcaLocalUnit;
+			pcaLocalUnit = new (const BlockUnit*[4]);
+			for (int UnitIndex = 0; UnitIndex < ciNumBlock; ++UnitIndex)
+				pcaLocalUnit[UnitIndex] = nullptr;
+
+			cWorld[BOARD_BACK].ClearBoard();
+
+			//for (int iBlock = 0; iBlock < MAX_BLOCK_SIZE; ++iBlock){
+			for (int iBlock = 0; iBlock < ciNumBlock; ++iBlock){
 				pcaLocalUnit[iBlock] = pcCurrentBlock->GetUnit(iBlock);
 				//test //cGlobalQuad.SetUnit(iBlock, pcaLocalUnit[iBlock]->x + xBoard_, pcaLocalUnit[iBlock]->y);
 				const int xGlobal = pcaLocalUnit[iBlock]->x + xBoard_;
@@ -281,16 +393,24 @@ public:
 				if (yGlobal >= 0 && yGlobal < BOARD_SIZE_ROW
 					&& xGlobal >= 0 && xGlobal < BOARD_SIZE_COL){
 					cWorld[BOARD_BACK].SetBoard(xGlobal, yGlobal, DEFAULT);
-				}
-			}
+				}//if
+			}//for
 		}
 		else
 			; // error, there is no block to excute this function.
 	}
 
+	//
+	void CopyWorld(TetrisBoard* src, TetrisBoard* dest){
+		memcpy((TetrisBoard*)dest, (TetrisBoard*)src, sizeof(TetrisBoard));
+	}
 
 	void Show(){
 		cWorld[BOARD_BACK].Show();
+	}
+	void ShowBack(){
+		CopyWorld(&cWorld[BOARD_BACK], &cWorld[BOARD_FACE]);
+		cWorld[BOARD_FACE].Show();
 	}
 };
 
@@ -303,9 +423,11 @@ void main()
 
 	test.Show();
 	
-	_getch();
+	printf("a,b,c\r\n");
+	input = _getch();
 	system("cls");
-	test.Init();
+	test.Init(input);
+	input = 0;
 
 	test.Local_to_Global(test.GetCurrentBlockPos_x(), test.GetCurrentBlockPos_y());
 	SetCursorPosition(0, 0);
@@ -321,6 +443,8 @@ void main()
 
 			if (input == 'q')
 				test.UpdateCurrentBlock();
+			else if (input == 'w')
+				test.ShowBack();
 			else if (input == 's')
 				break;
 			else
