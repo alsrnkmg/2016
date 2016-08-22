@@ -1,4 +1,4 @@
-// STANDALONE
+// (IS_NOT)STANDALONE
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
@@ -17,19 +17,20 @@ typedef int BOOL;
 
 #pragma warning(disable:4996)
 
-typedef struct tagStageData{
+typedef struct tagStageDataHead{
 	int iIndex;
 	int iLength;
-
-	char* cpBlockType;
-}StageData, *pStageData;
+}StageDataHead, *pStageDataHead;
 
 void main(){
 	int i = 0;
 
-	StageData data, read;
+	StageDataHead data, read;
 	FILE* fp = NULL;
 	
+	char* cpBlockType = NULL;	// added 08-22
+	char* cpBlockRead = NULL;	// added 08-22
+
 	int in_iIndex = 0,
 		in_iLength = 0;
 
@@ -40,8 +41,8 @@ void main(){
 		quit_block_type = 0;
 
 	// Step 0 -- Init
-	memset(&data, 0, sizeof(StageData));
-	memset(&read, 0, sizeof(StageData));
+	memset(&data, 0, sizeof(StageDataHead));
+	memset(&read, 0, sizeof(StageDataHead));
 
 	printf("\r\n\r\n\tTetris StageCreator.. - 2016.0817\r\n");
 	printf("\tData file will be named and saved in TestStage.dat on <this>folder\r\n");
@@ -108,11 +109,11 @@ void main(){
 	printf("data.iLength : %i\r\n", data.iLength);*/
 
 	// Step 3 -- Allocating memory on [data.cpBlockType]
-	data.cpBlockType = (char*)malloc(sizeof(char) * (data.iLength +1));			// 2--malloc
+	cpBlockType = (char*)malloc(sizeof(char) * (data.iLength +1));			// 2--malloc
 	printf("\r\nSTEP3-1 > Allocating memory on [data.cpBlockType]\r\n");
-	memset(data.cpBlockType, 0, sizeof(char) * (data.iLength +1));				// note: +1 for null-ended string.
+	memset(cpBlockType, 0, sizeof(char) * (data.iLength +1));				// note: +1 for null-ended string.
 	printf("STEP3-2 > Set(Initialzation) all [data.cpBlockType] to 0\r\n");
-	data.cpBlockType[data.iLength] = '\0';
+	cpBlockType[data.iLength] = '\0';
 	printf("STEP3-3 > Put <EOS-character> on the end\r\n\r\n");
 
 	// Step 4 -- Set Block-sequence.
@@ -126,43 +127,43 @@ void main(){
 
 			if (keyBuffer == 'a' || keyBuffer == 'A')
 			{
-				data.cpBlockType[i] = 'a';
+				cpBlockType[i] = 'a';
 				keyBuffer = 0;
 				quit_block_type = 1;
 			}
 			else if (keyBuffer == 'b' || keyBuffer == 'B')
 			{
-				data.cpBlockType[i] = 'b';
+				cpBlockType[i] = 'b';
 				keyBuffer = 0;
 				quit_block_type = 1;
 			}
 			else if (keyBuffer == 'c' || keyBuffer == 'C')
 			{
-				data.cpBlockType[i] = 'c';
+				cpBlockType[i] = 'c';
 				keyBuffer = 0;;
 				quit_block_type = 1;
 			}
 			else if (keyBuffer == 'd' || keyBuffer == 'D')
 			{
-				data.cpBlockType[i] = 'd';
+				cpBlockType[i] = 'd';
 				keyBuffer = 0;
 				quit_block_type = 1;
 			}
 			else if (keyBuffer == 'e' || keyBuffer == 'E')
 			{
-				data.cpBlockType[i] = 'e';
+				cpBlockType[i] = 'e';
 				keyBuffer = 0;
 				quit_block_type = 1;
 			}
 			else if (keyBuffer == 'f' || keyBuffer == 'F')
 			{
-				data.cpBlockType[i] = 'f';
+				cpBlockType[i] = 'f';
 				keyBuffer = 0;
 				quit_block_type = 1;
 			}
 			else if (keyBuffer == 'g' || keyBuffer == 'G')
 			{
-				data.cpBlockType[i] = 'g';
+				cpBlockType[i] = 'g';
 				keyBuffer = 0;
 				quit_block_type = 1;
 			}
@@ -174,7 +175,7 @@ void main(){
 			}
 		}
 
-		printf("\tSYS: [%i]Block to [   %c   ]\r\n", i, data.cpBlockType[i]);
+		printf("\tSYS: [%i]Block to [   %c   ]\r\n", i, cpBlockType[i]);
 		quit_block_type = 0;
 	}
 
@@ -184,11 +185,11 @@ void main(){
 	printf("\r\nSTEP5-1 > opening the file in 'write-only' mode.\r\n");
 	fwrite(&data, sizeof(int) * 2, 1, fp);	// note: first two member of StageData are int-type. 
 	printf("STEP5-2 > writing [INDEX] and [LENGTH] on the file.\r\n");
-	fputs(data.cpBlockType, fp);
+	fputs(cpBlockType, fp);
 	printf("STEP5-3 > writing [BLOCK]s on the file.\r\n");
 	fclose(fp);							// 1--closing file
 	printf("STEP5-4 > closing the file.\r\n");
-	free(data.cpBlockType);													// 2--free
+	free(cpBlockType);													// 2--free
 	printf("STEP5-5 > Freeing memory which was allocated.\r\n");
 
 	// Step 6 -- waiting for signal.
@@ -217,13 +218,13 @@ void main(){
 	// Reading Step 2 -- getting the length and allocating memory base on information.
 	fread(&(read.iLength), sizeof(int), 1, fp);
 	printf("\r\nREADING STEP 2-1 > Reading [INDEX]\r\n");
-	read.cpBlockType = (char*)malloc(sizeof(char)*(read.iLength +1));		// 4--malloc
+	cpBlockRead = (char*)malloc(sizeof(char)*(read.iLength + 1));		// 4--malloc
 	printf("READING STEP 2-2 > Allocating memory on [read.cpBlockType], LENGTH : %i\r\n", read.iLength);
-	memset(read.cpBlockType, 0, sizeof(char)*(read.iLength +1));
+	memset(cpBlockRead, 0, sizeof(char)*(read.iLength + 1));
 	printf("READING STEP 2-3 > Init allocated memory.\r\n");
 
 	// Reading Step 3 -- getting BlockType(s).
-	fgets(read.cpBlockType, (read.iLength +1), fp);	// note: +1 for EOS(EOF)
+	fgets(cpBlockRead, (read.iLength + 1), fp);	// note: +1 for EOS(EOF)
 	printf("\r\nREADING STEP 3-1 > Getting Data of BlockType(s).\r\n");
 	fclose(fp);											// 3--closing file
 	printf("READING STEP 3-2 > Closing the file.\r\n");
@@ -244,10 +245,10 @@ void main(){
 	printf("\tLENGTH: %i\r\n", read.iLength);
 	for (i = 0; i < read.iLength; ++i)
 	{
-		if (read.cpBlockType[i])
-			printf("[%i] : %c\r\n", i, read.cpBlockType[i]);
+		if (cpBlockRead[i])
+			printf("[%i] : %c\r\n", i, cpBlockRead[i]);
 	}
-	free(read.cpBlockType);
+	free(cpBlockRead);
 	//free(read.cpBlockType);												// 4--free
 	printf("SYS: Freeing memory which was allocated.\r\n");
 }
