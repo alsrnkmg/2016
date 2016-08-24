@@ -75,6 +75,17 @@ void DrawBoard() {
 	::memcpy((char*)g_aRrevBoard, (char const*)g_aBoard, BOARD_SIZE_ROW * BOARD_SIZE_COL);
 }//DrawBoard()
 
+void OnDraw(float fElapsedTime_) {
+	// clear game world(board)
+	::memset((char*)g_aBoard, 0, BOARD_SIZE_ROW * BOARD_SIZE_COL);
+
+	// draw game object
+	//DrawBlockOnBoard(IN &g_curBlock, g_currentBlockPos.x, g_currentBlockPos.y);
+	g_curBlock.DrawBlockOnBoard(g_currentBlockPos.x, g_currentBlockPos.y);
+
+	DrawBoard();
+}//OnDraw()
+
 void Initialize() {
 	::memset((char*)g_aBoard, 0, BOARD_SIZE_ROW * BOARD_SIZE_COL);
 	::memset((char*)g_aRrevBoard, 0, BOARD_SIZE_ROW * BOARD_SIZE_COL);
@@ -132,17 +143,6 @@ void OnUpdate(float fElapsedTime_) {
         g_currentBlockPos.y += 1;
     }//if
 }//OnUpdate()
-
-void OnDraw(float fElapsedTime_) {
-    // clear game world(board)
-    ::memset((char*)g_aBoard, 0, BOARD_SIZE_ROW * BOARD_SIZE_COL);
-
-    // draw game object
-    //DrawBlockOnBoard(IN &g_curBlock, g_currentBlockPos.x, g_currentBlockPos.y);
-    g_curBlock.DrawBlockOnBoard(g_currentBlockPos.x, g_currentBlockPos.y);
-
-	DrawBoard();
-}//OnDraw()
 
 void main() {
 	Initialize();

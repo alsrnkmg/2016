@@ -96,11 +96,11 @@ struct KBlock {
 		return true;
 	}//CanLocateOnBoard()
 
-	/// @brief	set block type based on the call.
-	void SetBlockType(KBlock* pTargetBlock, char cBlockType);
+	/// @brief	[yongtag]create new block based on the call.
+	void CreateBlock(KBlock* pTargetBlock, char cBlockType);
 };//struct KBlock
 
-void KBlock::SetBlockType(KBlock* pTargetBlock, char cBlockType){
+void KBlock::CreateBlock(KBlock* pTargetBlock, char cBlockType){
 	if (cBlockType == 'a')
 		;
 	else if (cBlockType == 'b')
@@ -110,9 +110,9 @@ void KBlock::SetBlockType(KBlock* pTargetBlock, char cBlockType){
 		m_aBlockPosition[1].x = 1;	// #3	(when O is top-left)
 		m_aBlockPosition[1].y = 0;
 		m_aBlockPosition[2].x = 0;
-		m_aBlockPosition[2].y = 1;	// #3
-		m_aBlockPosition[3].x = 0;	// #2
-		m_aBlockPosition[3].y = 2;	// @0#1	(when O is bottom-left)
+		m_aBlockPosition[2].y = 1;
+		m_aBlockPosition[3].x = 0;
+		m_aBlockPosition[3].y = 2;
 	}	
 	else if (cBlockType == 'c')
 		;
@@ -152,8 +152,8 @@ void DrawBoard() {
 
 /// @brief onetime initialization works here.
 void Initialize() {
-	::memset((char*)g_aBoard, 0, BOARD_SIZE_ROW * BOARD_SIZE_COL * sizeof(BOARD_CELL_TYPE));
-	::memset((char*)g_aCurBoard, 0, BOARD_SIZE_ROW * BOARD_SIZE_COL* sizeof(BOARD_CELL_TYPE));
+	::memset((char*)g_aBoard,	 0, BOARD_SIZE_ROW * BOARD_SIZE_COL * sizeof(BOARD_CELL_TYPE));
+	::memset((char*)g_aCurBoard, 0, BOARD_SIZE_ROW * BOARD_SIZE_COL * sizeof(BOARD_CELL_TYPE));
 
 	// Get the Win32 handle representing standard output.
 	// This generally only has to be done once, so we make it static.
@@ -235,7 +235,7 @@ void OnDraw(float fElapsedTime_) {
 	// prepare working Board with current(previous frame) board data.
 	memcpy(g_aBoard, g_aCurBoard, sizeof(g_aBoard));
 
-	g_curBlock.DrawBlockOnBoard(g_aBoard);
+	//g_curBlock.DrawBlockOnBoard(g_aBoard);
 
 	DrawBoard();
 }//OnDraw()

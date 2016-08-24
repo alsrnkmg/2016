@@ -16,6 +16,9 @@
     <Filter Include="소스 파일\PlayGrounds">
       <UniqueIdentifier>{71cd5545-68bc-4163-bbea-f1c8b74bd299}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\20151672">
+      <UniqueIdentifier>{8cd33d04-981c-458b-9ca8-95d1982ffdf4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -43,6 +46,12 @@
     </ClCompile>
     <ClCompile Include="_BlockType.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="main_0824_failed.c">
+      <Filter>소스 파일\20151672</Filter>
+    </ClCompile>
+    <ClCompile Include="main_0824_2nd.c">
+      <Filter>소스 파일\20151672</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
